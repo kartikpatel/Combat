@@ -5,6 +5,8 @@ import SpriteKit
 import GameplayKit
 import PlaygroundSupport
 
+let smokeEmitter = SKEmitterNode(fileNamed: "SmokeParticles.sks")
+
 class GameScene: SKScene {
     
     let redAgent = GKAgent2D()
@@ -58,6 +60,25 @@ class GameScene: SKScene {
 
         if let spaceshipBlue = self.childNode(withName: "blue spaceship") {
             spaceshipBlue.position = CGPoint(x: CGFloat(blueAgent.position.x), y: CGFloat(blueAgent.position.y))
+        }
+        
+        if let spaceshipRed = self.childNode(withName: "red spaceship") {
+            let collision  = !self.nodes(at: spaceshipRed.position).filter({ $0.name == "blue spaceship" }).isEmpty
+            if collision {
+                if let smokeEmitter = smokeEmitter, let smoke = smokeEmitter.copy() as? SKEmitterNode {
+                    self.addChild(smoke)
+                    smoke.position = spaceshipRed.position
+                    spaceshipRed.removeFromParent()
+                    smoke.run(
+                        SKAction.sequence(
+                            [SKAction.wait(forDuration: 1),
+                             SKAction.run { smoke.particleBirthRate = 0},
+                             SKAction.wait(forDuration: 1), SKAction.removeFromParent()
+                            ]
+                        )
+                    )
+                }
+            }
         }
     }
     
