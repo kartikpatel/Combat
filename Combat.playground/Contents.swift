@@ -15,6 +15,12 @@ spaceship.setScale(0.1)
 
 scene.addChild(spaceship)
 
+spaceship.run(
+    SKAction.repeatForever(
+        SKAction.rotate(byAngle: 0.25, duration: 0.15)
+    )
+)
+
 let view = SKView(frame: frame)
 view.presentScene(scene)
 
