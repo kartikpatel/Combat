@@ -26,17 +26,21 @@ emitter.particleAlphaRange = 0.5
 emitter.zPosition = 1
 scene.addChild(emitter)
 
-let spaceship = SKSpriteNode(imageNamed: "Spaceship")
-spaceship.position = midPoint
-spaceship.setScale(0.1)
-spaceship.zPosition = 2
-scene.addChild(spaceship)
+let spaceshipRed = SKSpriteNode(imageNamed: "Spaceship")
+spaceshipRed.position = CGPoint(x: 20, y: 20)
+spaceshipRed.setScale(0.1)
+spaceshipRed.zPosition = 2
+spaceshipRed.color = .red
+spaceshipRed.colorBlendFactor = 0.5
+scene.addChild(spaceshipRed)
 
-spaceship.run(
-    SKAction.repeatForever(
-        SKAction.rotate(byAngle: 0.25, duration: 0.15)
-    )
-)
+let spaceshipBlue = SKSpriteNode(imageNamed: "Spaceship")
+spaceshipBlue.position = CGPoint(x: frame.size.width - 20, y: frame.size.height - 20)
+spaceshipBlue.setScale(0.1)
+spaceshipBlue.zPosition = 2
+spaceshipBlue.color = .blue
+spaceshipBlue.colorBlendFactor = 0.5
+scene.addChild(spaceshipBlue)
 
 let view = SKView(frame: frame)
 view.showsFPS = true
