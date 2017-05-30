@@ -14,6 +14,7 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         let spaceshipRed = SKSpriteNode(imageNamed: "Spaceship")
+        spaceshipRed.name = "red spaceship"
         spaceshipRed.position = CGPoint(x: 20, y: 20)
         spaceshipRed.setScale(0.1)
         spaceshipRed.zPosition = 2
@@ -22,12 +23,25 @@ class GameScene: SKScene {
         self.addChild(spaceshipRed)
         
         let spaceshipBlue = SKSpriteNode(imageNamed: "Spaceship")
+        spaceshipBlue.name = "blue spaceship"
         spaceshipBlue.position = CGPoint(x: frame.size.width - 20, y: frame.size.height - 20)
         spaceshipBlue.setScale(0.1)
         spaceshipBlue.zPosition = 2
         spaceshipBlue.color = .blue
         spaceshipBlue.colorBlendFactor = 0.5
         self.addChild(spaceshipBlue)
+        
+        redAgent.position = vector2(Float(spaceshipRed.position.x), Float(spaceshipRed.position.y))
+        redAgent.maxAcceleration = 100
+        redAgent.maxSpeed = 90
+        redAgent.delegate = self
+
+        let blueGoal = GKGoal(toInterceptAgent: redAgent, maxPredictionTime: 2)
+
+        blueAgent.behavior = GKBehavior(goal: blueGoal, weight: 1)
+        blueAgent.position = vector2(Float(spaceshipBlue.position.x), Float(spaceshipBlue.position.y))
+        blueAgent.maxAcceleration = 90
+        blueAgent.maxSpeed = 200
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -38,6 +52,13 @@ class GameScene: SKScene {
         // Calculate time since last update
         let dt = currentTime - self.lastUpdateTime
         self.lastUpdateTime = currentTime
+        
+        redAgent.update(deltaTime: dt)
+        blueAgent.update(deltaTime: dt)
+
+        if let spaceshipBlue = self.childNode(withName: "blue spaceship") {
+            spaceshipBlue.position = CGPoint(x: CGFloat(blueAgent.position.x), y: CGFloat(blueAgent.position.y))
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -46,6 +67,19 @@ class GameScene: SKScene {
         redAgent.position = vector_float2( Float(location.x), Float(location.y))
     }
     
+}
+
+extension GameScene: GKAgentDelegate {
+
+    func agentDidUpdate(_ agent: GKAgent) {
+        guard let redAgent = agent as? GKAgent2D else { return }
+
+        if let spaceshipRed = self.childNode(withName: "red spaceship") {
+            let location = CGPoint(x: CGFloat(redAgent.position.x), y: CGFloat(redAgent.position.y))
+            spaceshipRed.run(SKAction.move(to: location, duration: 1))
+        }
+    }
+
 }
 
 let frame = CGRect(x: 0, y: 0, width: 320, height: 256)
